@@ -61,7 +61,7 @@ scatter(temp, press/1000, 'filled');
 xlabel('Temperatura (K)');
 ylabel('Presión (kPa)');
 title('Correlación temperatura-presión');
-lsline;
+% lsline;
 grid on;
 
 % Histograma de temperaturas
