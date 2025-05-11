@@ -1,0 +1,90 @@
+# Simulación de metano con enlaces y ángulos en LAMMPS (geometría tetraédrica)
+
+units           real
+atom_style      full
+
+# ================================================
+# 1. Definir estilos de interacción (¡CRÍTICO!)
+# ================================================
+bond_style      harmonic      # Enlaces armónicos
+angle_style     harmonic      # Ángulos armónicos (¡NUEVO!)
+dihedral_style  none
+improper_style  none
+
+# ================================================
+# 2. Leer archivo de datos (¡DEBE incluir Angles!)
+# ================================================
+read_data       methane.data  # Debe contener 
+                              # - 6 angles
+                              # - 1 angle types
+                              # - Angle Coeffs 1 60.0 109.5
+
+# ================================================
+# 3. Coeficientes de interacción (si no están en .data)
+# ================================================
+bond_coeff      1 800.0 1.09   # Enlace C-H (k=400 kcal/mol/Å², r0=1.09Å)
+angle_coeff     1 100.0 109.5   # Ángulo H-C-H (k=60 kcal/mol/rad², θ0=109.5°)
+
+# ================================================
+# 4. Potencial de pares (LJ para interacciones no enlazadas)
+# ================================================
+pair_style      lj/cut 10.0
+pair_coeff      1 1 0.1094 3.40   # C-C (ε=0.1094 kcal/mol, σ=3.40Å)
+pair_coeff      1 2 0.0300 2.50   # C-H (ε=0.0300 kcal/mol, σ=2.50Å)
+pair_coeff      2 2 0.0157 2.42   # H-H (ε=0.0157 kcal/mol, σ=2.42Å)
+
+# ================================================
+# 5. Configuración de vecinos
+# ================================================
+neighbor        3.0 bin
+#neigh_modify    every 1 delay 0 check yes
+neigh_modify    delay 0 every 1 check yes
+comm_modify     cutoff 12.0
+
+
+# ================================================
+# 6. Condiciones iniciales
+# ================================================
+velocity        all create 300.0 12345 mom yes rot yes dist gaussian
+
+# ================================================
+# 7. Integración temporal (NVE + SHAKE opcional)
+# ================================================
+# Opción 1: Metano flexible (con vibraciones)
+fix             thermostat all nvt temp 300.0 300.0 100.0  # Termostato NVT
+
+# Opción 2: Metano rígido (enlaces y ángulos fijos)
+# fix             integrator all nve
+# fix             shake all shake 0.0001 20 0 b 1 a 1  # Bloquea enlaces y ángulos
+
+# ================================================
+# 8. Configuración de salida
+# ================================================
+thermo_style    custom step temp pe ke etotal press
+thermo          50
+
+dump            traj all xyz 100 traj_methane.xyz
+dump_modify     traj element C H
+
+# ================================================
+# 9. Minimización de energía (más estricta)
+# ================================================
+min_style       cg
+minimize        1.0e-12 1.0e-12 1000000 10000000  # Tolerancias extremas
+
+# ================================================
+# 10. Dinámica molecular
+# ================================================
+timestep        0.25       # 1 fs (adecuado para integración con enlaces)
+run             5000      # Más pasos para mejor muestreo
+
+# ================================================
+# 11. Termostato (opcional para NVT)
+# ================================================
+# unfix          integrator
+# fix            thermostat all nvt temp 300.0 300.0 100.0
+# run            1000
+
+# Limpieza final
+# unfix          thermostat
+# unfix          shake

@@ -1,0 +1,53 @@
+# Molécula de Metano con Geometría Tetraédrica Perfecta
+# Versión final con parámetros optimizados
+
+5 atoms
+4 bonds
+6 angles
+0 dihedrals
+0 impropers
+
+2 atom types
+1 bond types
+1 angle types
+
+-10.0 10.0 xlo xhi
+-10.0 10.0 ylo yhi
+-10.0 10.0 zlo zhi
+
+Masses
+
+1 12.011000    # Carbono
+2 1.008000     # Hidrógeno
+
+Bond Coeffs
+
+1 450.0 1.09    # harmonic (k=450 kcal/mol/Å², r0=1.09Å)
+
+Angle Coeffs
+
+1 120.0 109.5   # harmonic (k=120 kcal/mol/rad², θ0=109.5°)
+
+Atoms
+
+1 1 1 -0.83400 0.00000 0.00000 0.00000
+2 1 2 0.20900 0.89000 0.89000 0.89000
+3 1 2 0.20900 -0.89000 -0.89000 0.89000
+4 1 2 0.20900 -0.89000 0.89000 -0.89000
+5 1 2 0.20900 0.89000 -0.89000 -0.89000
+
+Bonds
+
+1 1 1 2
+2 1 1 3
+3 1 1 4
+4 1 1 5
+
+Angles
+
+1 1 2 1 3
+2 1 2 1 4
+3 1 2 1 5
+4 1 3 1 4
+5 1 3 1 5
+6 1 4 1 5
