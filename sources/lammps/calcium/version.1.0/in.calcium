@@ -1,0 +1,26 @@
+# 1. Configuración inicial
+
+units real
+atom_style full
+read_data output.data
+
+# 2. Campos de fuerza (CLAYFF para C-S-H [7])
+
+pair_style lj/cut/coul/cut 12.0
+pair_coeff * * 0.0 0.0         # Reset
+pair_coeff 1 1 0.1553 3.5539   # Ob-O (óxido)
+pair_coeff 3 3 0.1553 3.5539   # Ow-Ow (agua)
+pair_coeff 4 4 0.0 0.0         # Ca-Ca (interacciones coulómbicas)
+bond_style harmonic
+angle_style harmonic
+
+# 3. Condiciones térmicas
+
+velocity all create 300 4928459
+fix 1 all nvt temp 300 300 100.0
+
+# 4. Dinámica
+
+timestep 1.0
+thermo 100
+run 5000

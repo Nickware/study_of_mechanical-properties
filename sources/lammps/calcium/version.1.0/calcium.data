@@ -1,0 +1,29 @@
+# LAMMPS data file for Calcium Silicate Hydrate (C-S-H)
+# Atomic positions rounded to 5 decimal places for LAMMPS compatibility
+
+10 atoms
+4 atom types
+
+-17.0 15.0 xlo xhi
+-2.0 2.0 ylo yhi
+-2.0 2.0 zlo zhi
+
+Masses
+
+1 40.08  # Calcium (Ca)
+2 28.09  # Silicon (Si)
+3 16.00  # Oxygen (O)
+4 1.008  # Hydrogen (H)
+
+Atoms 
+
+1 1 1 -16.79740 0.42580 -0.04860
+2 2 2 -5.26190 -0.10840 0.03220
+3 3 3 -6.56290 -0.49520 0.93660
+4 3 3 -5.00160 -1.27830 -1.07410
+5 3 3 -5.53050 1.30910 -0.72860
+6 3 3 -3.95260 0.03070 0.99470
+7 1 1 5.48430 -0.09850 -0.01420
+8 1 1 14.14060 0.16400 -0.01780
+9 4 4 -16.96910 0.66020 -0.97090
+10 4 4 -16.00820 -0.11840 0.07850
