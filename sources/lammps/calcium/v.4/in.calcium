@@ -1,0 +1,59 @@
+# 1. CONFIGURACIÓN INICIAL
+units real
+atom_style full
+dimension 3
+boundary p p p
+processors * * 1
+package omp 4
+suffix omp
+
+# 2. INTERACCIONES COMPLETAS
+pair_style lj/cut/coul/cut 10.0
+pair_modify mix geometric
+bond_style harmonic
+angle_style harmonic
+
+# 3. LECTURA DE DATOS
+atom_style full
+read_data output.data extra/special/per/atom 1
+
+# 4. TODOS LOS COEFICIENTES
+pair_coeff * * 0.0 0.0
+pair_coeff 1 1 0.05 3.5539   # ε reducido a ~30% del original
+pair_coeff 3 3 0.05 3.5539
+pair_coeff 1 2 0.0 0.0   # Ob-Si
+pair_coeff 1 3 0.116475 3.5539
+pair_coeff 1 4 0.0 0.0   # Ob-H
+pair_coeff 2 2 0.0 0.0
+pair_coeff 2 3 0.116475 3.5539  # Si-Ow
+pair_coeff 2 4 0.0 0.0   # Si-H
+pair_coeff 3 4 0.0 0.0   # Ow-H
+pair_coeff 4 4 0.0 0.0
+
+bond_coeff 1 100.0 1.0       # k reducida a 100
+angle_coeff 1 15.0 109.47    # k reducida a 15
+
+# 5. MINIMIZACIÓN ROBUSTA
+min_style cg
+minimize 1.0e-4 1.0e-8 10000 20000
+reset_timestep 0
+
+# 6. DINÁMICA MOLECULAR
+timestep 0.1  # Más estable para sistemas pequeños
+neighbor 2.0 bin
+neigh_modify every 1 delay 0 check yes
+
+# 7. EQUILIBRACIÓN
+fix 1 all langevin 300 300 50 12345 zero yes
+unfix 1
+fix 2 all nvt temp 300 300 50.0
+thermo 50
+run 5000  # Aumentar de 2000 a 5000 pasos
+unfix 2
+
+# 8. PRODUCCIÓN
+fix 3 all nvt temp 300 300 50.0
+run 5000
+
+compute rdf all rdf 50
+fix 2 all ave/time 100 10 1000 c_rdf[*] file rdf.dat mode vector
