@@ -15,7 +15,7 @@ angle_style harmonic
 
 # 3. LECTURA DE DATOS
 atom_style full
-read_data output.data extra/special/per/atom 1
+read_data calcium.data extra/special/per/atom 1
 
 # 4. TODOS LOS COEFICIENTES
 pair_coeff * * 0.0 0.0
