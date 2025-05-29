@@ -1,39 +1,50 @@
 function generate_lammps_data(num_atoms, output_filename)
-    % Versión 100% funcional para LAMMPS
-    % Genera datos compatibles con simulaciones paralelas
+    % Versión definitiva para simulaciones MPI en LAMMPS
+    % Uso: generate_lammps_data(200, 'calcium_mpi.data')
     
-    % 1. Configuración con parámetros probados
-    box_size = [30.0, 8.0, 8.0]; % Tamaño óptimo para 200 átomos
+    % 1. Configuración optimizada para MPI
+    box_size = [40.0, 15.0, 15.0]; % Caja más grande para mejor distribución
+    num_regions = 4; % Igual al número de procesadores que usarás
+    
+    % Propiedades atómicas
     atom_props = {
         1, 40.078, 2.0, 1;   % Ca
         2, 28.085, 4.0, 1;    % Si
         3, 15.999, -0.8, 1;   % O
-        4, 1.008, 0.4, 2      % H
+        4, 1.008, 0.4, 2      % H (mol_id = 2 para enlaces)
     };
     
-    % 2. Generación de átomos con clusters locales
+    % 2. Generación de átomos con distribución por regiones
     atoms = cell(num_atoms, 5);
-    h_atoms = [];
-    num_clusters = 5;
-    cluster_pos = box_size .* rand(num_clusters,3) - box_size/2;
+    region_H = cell(num_regions, 1); % Hidrógenos por región
     
-    % Distribución garantizada
+    % Definir regiones espaciales
+    region_edges = linspace(-box_size(1)/2, box_size(1)/2, num_regions+1);
+    
     for i = 1:num_atoms
-        if i <= floor(0.3*num_atoms) % 30% H
+        % Asignar región basada en posición x (para dominio simple en MPI)
+        region = mod(i-1, num_regions) + 1;
+        x_min = region_edges(region);
+        x_max = region_edges(region+1);
+        
+        % Posición dentro de la región asignada
+        pos = [x_min + (x_max-x_min)*rand(), ...
+               box_size(2)*(rand()-0.5), ...
+               box_size(3)*(rand()-0.5)];
+        
+        % Asignar tipo atómico
+        if rand() < 0.25 % 25% H
             type = 4;
-            cluster = mod(i-1, num_clusters) + 1;
-            pos = cluster_pos(cluster,:) + 1.0*(rand(1,3)-0.5);
-            h_atoms = [h_atoms; i];
+            region_H{region} = [region_H{region}; i];
         else
             r = rand();
             if r < 0.2
                 type = 1; % Ca
-            elseif r < 0.44
+            elseif r < 0.45
                 type = 2; % Si
             else
                 type = 3; % O
             end
-            pos = box_size .* rand(1,3) - box_size/2;
         end
         
         atoms{i,1} = i;
@@ -42,45 +53,64 @@ function generate_lammps_data(num_atoms, output_filename)
         atoms{i,4} = atom_props{type,3}; % charge
         atoms{i,5} = pos;
     end
-
-    % 3. Generación de enlaces VERIFICADOS
+    
+    % 3. Generación de enlaces SOLO dentro de cada región
     bonds = {};
     bond_count = 0;
-    max_dist = 1.2;
+    max_dist = 1.5; % Distancia máxima para enlace
     
-    % Matriz de distancias verificada
-    for i = 1:length(h_atoms)
-        for j = i+1:length(h_atoms)
-            dist = norm(atoms{h_atoms(i),5} - atoms{h_atoms(j),5});
-            if dist < max_dist
-                bond_count = bond_count + 1;
-                bonds{bond_count} = [bond_count, 1, h_atoms(i), h_atoms(j)];
+    for region = 1:num_regions
+        H_in_region = region_H{region};
+        for i = 1:length(H_in_region)
+            for j = i+1:length(H_in_region)
+                dist = norm(atoms{H_in_region(i),5} - atoms{H_in_region(j),5});
+                if dist < max_dist
+                    bond_count = bond_count + 1;
+                    bonds{bond_count} = [bond_count, 1, H_in_region(i), H_in_region(j)];
+                end
             end
         end
     end
     
-    % 4. Generación de ángulos CONSECUTIVOS
-    angles = {};
-    if length(bonds) >= 2
-        for i = 1:length(bonds)-1
-            angle_count = i;
-            angles{angle_count} = [angle_count, 1, bonds{i}(3), bonds{i}(4), bonds{i+1}(4)];
+    % 4. Validación CRÍTICA de enlaces
+    valid_bonds = {};
+    for i = 1:length(bonds)
+        id1 = bonds{i}(3);
+        id2 = bonds{i}(4);
+        % Verificar que ambos átomos existen y son de tipo H
+        if id1 <= num_atoms && id2 <= num_atoms && ...
+           atoms{id1,3} == 4 && atoms{id2,3} == 4
+            valid_bonds{end+1} = bonds{i};
         end
     end
     
-    % 5. Escritura del archivo con formato EXACTO
+    % 5. Generación de ángulos solo si hay suficientes enlaces
+    angles = {};
+    if length(valid_bonds) >= 2
+        for i = 1:length(valid_bonds)-1
+            shared = intersect(valid_bonds{i}(3:4), valid_bonds{i+1}(3:4));
+            if ~isempty(shared)
+                angle_atoms = unique([valid_bonds{i}(3:4), valid_bonds{i+1}(3:4)]);
+                if length(angle_atoms) == 3
+                    angles{end+1} = [length(angles)+1, 1, angle_atoms(1), shared, angle_atoms(3)];
+                end
+            end
+        end
+    end
+    
+    % 6. Escritura del archivo de datos
     fid = fopen(output_filename, 'w');
     
-    % Encabezado verificado
-    fprintf(fid, 'LAMMPS data file - C-S-H System\n\n');
+    % Encabezado
+    fprintf(fid, 'LAMMPS data file - MPI Optimized\n\n');
     fprintf(fid, '%d atoms\n', num_atoms);
     fprintf(fid, '4 atom types\n');
-    fprintf(fid, '%d bonds\n', length(bonds));
+    fprintf(fid, '%d bonds\n', length(valid_bonds));
     fprintf(fid, '1 bond types\n');
     fprintf(fid, '%d angles\n', length(angles));
     fprintf(fid, '1 angle types\n\n');
     
-    % Box dimensions
+    % Box
     fprintf(fid, '%.1f %.1f xlo xhi\n', -box_size(1)/2, box_size(1)/2);
     fprintf(fid, '%.1f %.1f ylo yhi\n', -box_size(2)/2, box_size(2)/2);
     fprintf(fid, '%.1f %.1f zlo zhi\n\n', -box_size(3)/2, box_size(3)/2);
@@ -91,7 +121,7 @@ function generate_lammps_data(num_atoms, output_filename)
         fprintf(fid, '%d %.3f\n', i, atom_props{i,2});
     end
     
-    % Coeficientes compatibles
+    % Coeficientes
     fprintf(fid, '\nBond Coeffs\n\n1 500.0 1.0\n');
     fprintf(fid, '\nAngle Coeffs\n\n1 100.0 109.47\n');
     
@@ -102,13 +132,13 @@ function generate_lammps_data(num_atoms, output_filename)
                 atoms{i,1}, atoms{i,2}, atoms{i,3}, atoms{i,4}, atoms{i,5}(1), atoms{i,5}(2), atoms{i,5}(3));
     end
     
-    % Bonds (verificados)
+    % Bonds
     fprintf(fid, '\nBonds\n\n');
-    for i = 1:length(bonds)
-        fprintf(fid, '%d %d %d %d\n', bonds{i}(1), bonds{i}(2), bonds{i}(3), bonds{i}(4));
+    for i = 1:length(valid_bonds)
+        fprintf(fid, '%d %d %d %d\n', valid_bonds{i}(1), valid_bonds{i}(2), valid_bonds{i}(3), valid_bonds{i}(4));
     end
     
-    % Angles (consecutivos)
+    % Angles
     fprintf(fid, '\nAngles\n\n');
     for i = 1:length(angles)
         fprintf(fid, '%d %d %d %d %d\n', angles{i}(1), angles{i}(2), angles{i}(3), angles{i}(4), angles{i}(5));
@@ -122,16 +152,9 @@ function generate_lammps_data(num_atoms, output_filename)
     
     fclose(fid);
     
-    % Verificación final
-    fprintf('Archivo generado con éxito:\n');
-    fprintf('- %d átomos (%d H)\n', num_atoms, length(h_atoms));
-    fprintf('- %d enlaces verificados\n', length(bonds));
-    fprintf('- %d ángulos consecutivos\n', length(angles));
-    
-    % Comprobación crítica
-    for i = 1:length(bonds)
-        if bonds{i}(3) > num_atoms || bonds{i}(4) > num_atoms
-            error('¡Error crítico: Enlace referencia átomos inexistentes!');
-        end
-    end
+    % Reporte final
+    fprintf('Archivo %s generado exitosamente:\n', output_filename);
+    fprintf('- %d átomos totales\n', num_atoms);
+    fprintf('- %d enlaces válidos (solo intra-región)\n', length(valid_bonds));
+    fprintf('- %d ángulos\n', length(angles));
 end
