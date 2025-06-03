@@ -48,7 +48,7 @@ fix 1 all langevin 300 300 50 12345 zero yes
 unfix 1
 fix 2 all nvt temp 300 300 50.0
 thermo 50
-run 5000  # Aumentar de 2000 a 5000 pasos
+run 4800  # Aumentar de 2000 a 5000 pasos
 unfix 2
 
 # 8. PRODUCCIÓN
