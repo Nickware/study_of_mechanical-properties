@@ -68,5 +68,5 @@ Simulación que modela moléculas de metano usando:
    - Coeficiente de difusión (MSD)
    - Función de autocorrelación de velocidades
 
-**Nota importante**: Los parámetros LJ usados son específicos para interacciones CH₄-CH₄. Para sistemas mixtos, revisar reglas de combinación ([Documentación LAMMPS](https://docs.lammps.org/pair_modify.html))[5].
+**Nota importante**: Los parámetros LJ usados son específicos para interacciones CH₄-CH₄. Para sistemas mixtos, se debe consultar reglas de combinación ([Documentación LAMMPS](https://docs.lammps.org/pair_modify.html))[5].
 
