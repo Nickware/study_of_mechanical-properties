@@ -61,7 +61,7 @@ Este script realiza simulaciones de dinámica molecular de sistemas que contiene
 
 ## Consejos para personalizar
 
-1. **Tamaño del sistema**: Modifica `calcium.data` para diferentes configuraciones
+1. **Tamaño del sistema**: Modificar `calcium.data` para diferentes configuraciones
 2. **Control de temperatura**:
 3. **Duración de la simulación**:
 4. **Resolución del RDF**:
