@@ -79,6 +79,14 @@ function create_plots(steps, temp, press, tot_energy, pot_energy)
     %lsline;
     grid on;
     print('temp_press_correlation.png', '-dpng');
+
+    % Histograma de temperaturas
+    figure;
+    hist(temp, 5);
+    xlabel('Temperatura (K)');
+    ylabel('Frecuencia');
+    title('Distribución de temperaturas');
+    grid on;
     
     % Guardar todas las gráficas
     print('simulation_plots.png', '-dpng');

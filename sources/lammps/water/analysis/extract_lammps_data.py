@@ -1,13 +1,14 @@
-# save this as extract_lammps_data.py
+# extract_lammps_data_fixed.py
 import re
 import sys
 import pandas as pd
+from pathlib import Path
 
 def extract_lammps_data(output_file):
     with open(output_file, 'r') as f:
         content = f.read()
 
-    # Pattern to match thermodynamic data
+    # Patrón para que coincida con los datos termodinámicos
     pattern = r'^\s*(\d+)\s+(\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)'
     matches = re.finditer(pattern, content, re.MULTILINE)
     
@@ -22,9 +23,13 @@ def extract_lammps_data(output_file):
         })
     
     df = pd.DataFrame(data)
-    csv_file = output_file.replace('.out', '.csv').replace('.log', '.csv')
+    
+    # Crear nombre de archivo de salida garantizando extensión .csv
+    input_path = Path(output_file)
+    csv_file = input_path.with_suffix('.csv')
+    
     df.to_csv(csv_file, index=False)
-    print(f"Extrayendo datos a {csv_file}")
+    print(f"Data extracted to {csv_file}")
     return csv_file
 
 if __name__ == "__main__":
