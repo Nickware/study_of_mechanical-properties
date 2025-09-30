@@ -2,9 +2,9 @@
 
 ------
 
-# 📘 Simulación de C-S-H con aditivos de PE en LAMMPS
+# Simulación de C-S-H con aditivos de PE en LAMMPS
 
-## 🧩 1. Script base en LAMMPS con potencial CLAYFF
+## 1. Script base en LAMMPS con potencial CLAYFF
 
 ```lammps
 units real
@@ -36,7 +36,7 @@ run 10000
 
 ------
 
-## 📂 2. Archivo `clay_structure.data` (estructura genérica)
+## 2. Archivo `clay_structure.data` (estructura genérica)
 
 ```lammps
 LAMMPS data file for clay simulation
@@ -71,7 +71,7 @@ Angles
 
 ------
 
-## 🧪 3. Script para simular C-S-H con aditivos de PE
+## 3. Script para simular C-S-H con aditivos de PE
 
 ```lammps
 units real
@@ -102,7 +102,7 @@ run 10000
 
 ------
 
-## 🧱 4. Archivo `csh_pe_structure.data` (modelo mixto)
+## 4. Archivo `csh_pe_structure.data` (modelo mixto)
 
 ```lammps
 LAMMPS data file for C-S-H with PE additives
@@ -137,7 +137,7 @@ Angles
 
 ------
 
-## 🧮 5. Script en Octave para generar posiciones
+## 5. Script en Octave para generar posiciones
 
 ```octave
 clc; clear;
@@ -170,6 +170,6 @@ disp("Archivo 'generated_positions.data' creado exitosamente!");
 
 **Descripción:**
 
-- Genera 200 posiciones aleatorias en un cubo de 20x20x20 Å.
-- Alterna tipos de átomos entre C-S-H (`1`) y PE (`2`).
-- Guarda el resultado en un archivo `.data` listo para usar en LAMMPS.
+- Este archivo genera 200 posiciones aleatorias en un cubo de 20x20x20 Å.
+- Permite alternar tipos de átomos entre C-S-H (`1`) y PE (`2`).
+- Está configurado para guardar el resultado en un archivo `.data` listo para usar en LAMMPS.
