@@ -269,19 +269,19 @@ manuscripts/
 ## CRITERIOS DE ÉXITO
 
 ### Técnicos:
-- ✅ Simulaciones MD convergen (< 5% drift)
-- ✅ Parámetros DPD reproducen ρ, κ (< 10% error)
-- ✅ Composite DPD muestra física razonable
+-  Simulaciones MD convergen (< 5% drift)
+-  Parámetros DPD reproducen ρ, κ (< 10% error)
+-  Composite DPD muestra física razonable
 
 ### Científicos:
-- ✅ Metodología transferible otros sistemas
-- ✅ Validación cuantitativa MD-DPD
-- ✅ Insights nuevos C-S-H/PE interfaces
+-  Metodología transferible otros sistemas
+-  Validación cuantitativa MD-DPD
+-  Insights nuevos C-S-H/PE interfaces
 
 ### Publicación:
-- ✅ 8 páginas, formato JCP
-- ✅ 5-6 figuras alta calidad
-- ✅ Código/datos disponibles (GitHub)
-- ✅ Submission antes deadline
+-  8 páginas, formato JCP
+-  5-6 figuras alta calidad
+-  Código/datos disponibles (GitHub)
+-  Submission antes deadline
 
-¡Este workflow indica una roadmap clara día a día para completar exitosamente el proyecto!
+¡Este workflow indica una roadmap para completar exitosamente el proyecto!
