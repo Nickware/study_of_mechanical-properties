@@ -5,9 +5,9 @@
 ### Día 1: Literatura y Fundamentos
 **Tareas críticas:**
 - [ ] Revisión DPD para materiales cementosos (últimos 3 años)
-- [ ] Coupling methods DPD-DEM (literatura limitada - oportunidad!)
+- [ ] Coupling methods DPD-DEM (literatura limitada - ¡oportunidad!)
 - [ ] Parámetros DPD para C-S-H en literatura (Pellenq, Manzano, etc.)
-- [ ] Setup LAMMPS con DPD package
+- [ ] Setup LAMMPS the DPD package
 
 **Recursos clave:**
 ```bash
@@ -584,11 +584,11 @@ Storage: ~200 GB (trajectories + analysis)
 ```
 
 ### Criterios Éxito
-- ✅ **Validación mecánica**: Error DPD-DEM < 15%
-- ✅ **Morfología**: Patrones cualitativamente similares
-- ✅ **Escalabilidad**: Demostrada hasta 10⁶ partículas
-- ✅ **Reproducibilidad**: Múltiples realizaciones consistentes
-- ✅ **Aplicabilidad**: Metodología transferible otros sistemas
+-  **Validación mecánica**: Error DPD-DEM < 15%
+-  **Morfología**: Patrones cualitativamente similares
+-  **Escalabilidad**: Demostrada hasta 10⁶ partículas
+-  **Reproducibilidad**: Múltiples realizaciones consistentes
+-  **Aplicabilidad**: Metodología transferible otros sistemas
 
 ## CONTINGENCIAS
 
@@ -607,4 +607,4 @@ Storage: ~200 GB (trajectories + analysis)
 - Template JCP pre-existente
 - Colaboración escritura especializada
 
-¡Este workflow apoya el proyecto solido enmarcado a ser sometido para JCP!
+¡Este workflow apoya el proyecto sólido enmarcado a ser sometido a JCP!
