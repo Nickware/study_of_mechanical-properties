@@ -13,9 +13,9 @@ import os
 # Paso 1: Leer estructura desde CIF
 # =============================================================================
 
-# Asegúrate de tener el archivo 'tobermorite_11A.cif' en el mismo directorio
+# Asegurarse de tener el archivo 'tobermorite_11A.cif' en el mismo directorio
 if not os.path.exists('tobermorite_11A.cif'):
-    raise FileNotFoundError("Archivo 'tobermorite_11A.cif' no encontrado. Asegúrate de guardarlo en la carpeta actual.")
+    raise FileNotFoundError("Archivo 'tobermorite_11A.cif' no encontrado. Asegurarse de guardarlo en la carpeta actual.")
 
 print("Leyendo estructura desde tobermorite_11A.cif...")
 atoms = read('tobermorite_11A.cif')
@@ -96,7 +96,7 @@ optimizer = BFGS(
 # Critério estricto: fuerza máxima < 0.05 eV/Å
 optimizer.run(fmax=0.05)
 
-print("✅ Optimización finalizada.")
+print(" Optimización finalizada.")
 
 # =============================================================================
 # Paso 4: Guardar resultados y análisis
@@ -109,7 +109,7 @@ write('csh_optimizado.json', atoms)  # Formato intermedio para otros scripts
 
 # Energía potencial final
 energy = atoms.get_potential_energy()
-print(f"\n🔍 Resultados finales:")
+print(f"\n Resultados finales:")
 print(f"Energía potencial final: {energy:.6f} eV")
 
 # Fuerzas máximas y RMS
@@ -121,12 +121,12 @@ print(f"Fuerza RMS: {rms_force:.6f} eV/Å")
 
 # Verificación de convergencia
 if max_force < 0.05:
-    print("✅ Convergencia alcanzada (fmax < 0.05 eV/Å)")
+    print(" Convergencia alcanzada (fmax < 0.05 eV/Å)")
 else:
-    print("⚠️ Advertencia: convergencia incompleta.")
+    print(" Advertencia: convergencia incompleta.")
 
 # Información adicional
-print(f"\n📊 Estadísticas:")
+print(f"\n Estadísticas:")
 print(f"Total de átomos: {len(atoms)}")
 print(f"Fórmula química: {atoms.get_chemical_formula()}")
 
@@ -139,12 +139,12 @@ print(f"Energía ")
 # Paso 5: Recomendaciones post-optimización
 # =============================================================================
 
-print("\n📌 Recomendaciones:")
-print("1. Verifica la geometría optimizada visualmente (con VMD, Ovito o ASE-GUI).")
-print("2. Considera un cálculo single-point con funcional híbrido (PBE0) o base mayor.")
-print("3. Calcula propiedades: band gap, DOS, funciones de pair distribution (PDF).")
-print("4. Prueba con superceldas (2x2x1) para reducir interacciones espurias.")
-print("5. Compara energía por fórmula con otras fases (jennite, portlandite).")
+print("\n Recomendaciones:")
+print("1. Verificar la geometría optimizada visualmente (con VMD, Ovito o ASE-GUI).")
+print("2. Considerar un cálculo single-point con funcional híbrido (PBE0) o base mayor.")
+print("3. Calcular propiedades: band gap, DOS, funciones de pair distribution (PDF).")
+print("4. Probar con superceldas (2x2x1) para reducir interacciones espurias.")
+print("5. Comparar energía por fórmula con otras fases (jennite, portlandite).")
 
 # Ejemplo: abrir con ASE-GUI (descomenta si lo deseas)
 # from ase.visualize import view
