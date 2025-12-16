@@ -4,7 +4,7 @@
 
 **OpenLB** es un paquete de software de código abierto (open-source) y una librería en **C++** de alto rendimiento, diseñada específicamente para implementar simulaciones de fluidos y fenómenos de transporte utilizando el **Método Lattice Boltzmann (LBM)**.
 
-OpenLB es una herramienta muy reconocida en la comunidad de investigación y fue una de las primeras plataformas genéricas de LBM disponibles para la comunidad (licencia GPLv2).
+OpenLB es una herramienta reconocida en la comunidad de investigación y fue una de las primeras plataformas genéricas de LBM disponibles para la comunidad (licencia GPLv2).
 
 ## Características Clave de OpenLB
 
@@ -46,11 +46,11 @@ En resumen, **OpenLB** es un *framework* de LBM avanzado, modular y altamente op
 
 Instalar, configurar y testear **OpenLB** en Linux es un proceso similar a la instalación de cualquier librería científica de C++: se descargan las dependencias, se obtiene el código fuente y se compila usando un sistema de construcción (típicamente CMake o Make).
 
-Aquí tienes una guía paso a paso, priorizando el uso de **CMake**, que es el método recomendado y más moderno.
+Aquí se tiene una guía paso a paso, priorizando el uso de **CMake**, que es el método recomendado y más moderno.
 
 ## 1. Requisitos y Dependencias
 
-Asegúrate de tener instalados los siguientes paquetes en tu sistema Linux.
+Asegúrarse de tener instalados los siguientes paquetes en tu sistema Linux.
 
 | **Requisito**           | **Propósito**                                          | **Comando de Instalación (Ej. Ubuntu/Debian)**        |
 | ----------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
@@ -65,7 +65,7 @@ Asegúrate de tener instalados los siguientes paquetes en tu sistema Linux.
 
 ### A. Obtener el Código Fuente
 
-Clona el repositorio oficial de OpenLB usando Git:
+Clonar el repositorio oficial de OpenLB usando Git:
 
 Bash
 
@@ -89,7 +89,7 @@ cd build
 
 ### C. Configuración con CMake
 
-Ejecuta `cmake` para configurar el proceso de construcción, decirle dónde encontrar las dependencias y definir las opciones de compilación.
+Ejecutar `cmake` para configurar el proceso de construcción, decirle dónde encontrar las dependencias y definir las opciones de compilación.
 
 - **Configuración Básica:**
 
@@ -101,7 +101,7 @@ Ejecuta `cmake` para configurar el proceso de construcción, decirle dónde enco
 
 - Configuración con Paralelismo (MPI):
 
-  Si quieres asegurarte de que la librería se construya con soporte para MPI (lo cual es crucial para el rendimiento), puedes especificarlo explícitamente (aunque a menudo CMake lo detecta automáticamente):
+  Si se quiere asegurar que la librería se construya con soporte para MPI (lo cual es crucial para el rendimiento), puedes especificarlo explícitamente (aunque a menudo CMake lo detecta automáticamente):
 
   Bash
 
@@ -109,7 +109,7 @@ Ejecuta `cmake` para configurar el proceso de construcción, decirle dónde enco
   cmake -DWITH_MPI=ON ..
   ```
 
-  > **Nota:** Puedes añadir otras opciones aquí, como `-DWITH_CUDA=ON` si quieres soporte para GPU (requiere tener el kit de desarrollo CUDA instalado).
+  > **Nota:** Puede añadir otras opciones aquí, como `-DWITH_CUDA=ON` si quieres soporte para GPU (requiere tener el kit de desarrollo CUDA instalado).
 
 ### D. Compilación
 
@@ -143,13 +143,13 @@ Este comando ejecutará una serie de pruebas automatizadas incluidas en OpenLB. 
 
 Para un test funcional en un problema real, puedes compilar y ejecutar uno de los ejemplos que vienen con la distribución.
 
-1. **Encuentra un Ejemplo:** Navega a la carpeta de ejemplos (ej. `cd ../examples/poiseuille/`).
+1. **Encuentra un Ejemplo:** Navegar a la carpeta de ejemplos (ej. `cd ../examples/poiseuille/`).
 
-2. **Compila el Ejemplo:** Dentro de la carpeta del ejemplo, puedes usar un `Makefile` específico (si está presente) o usar el sistema de construcción de CMake si el ejemplo está integrado.
+2. **Compila el Ejemplo:** Dentro de la carpeta del ejemplo, puede usar un `Makefile` específico (si está presente) o usar el sistema de construcción de CMake si el ejemplo está integrado.
 
 3. Ejecución Paralela (Test Principal):
 
-   Una vez compilado el ejecutable (ej. poiseuille), pruébalo con mpirun:
+   Una vez compilado el ejecutable (ej. poiseuille), probar con mpirun:
 
    Bash
 
@@ -157,6 +157,6 @@ Para un test funcional en un problema real, puedes compilar y ejecutar uno de lo
    mpirun -np 4 ./poiseuille
    ```
 
-   - **`-np 4`**: Ejecuta la simulación usando 4 procesos (núcleos de CPU).
+   - **`-np 4`**: Ejecutar la simulación usando 4 procesos (núcleos de CPU).
 
 Si la simulación se ejecuta hasta el final sin errores de MPI o de segmentación, y genera archivos de salida (típicamente VTK para post-procesamiento), significa que OpenLB está instalado y configurado correctamente.

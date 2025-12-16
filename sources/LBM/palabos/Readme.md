@@ -52,7 +52,7 @@ Antes de instalar Palabos, asegúrarse de tener las siguientes herramientas y li
 
 ### A. Obtener el Código Fuente
 
-Utilizar Git para clonar el repositorio de Palabos (o puedes descargar el archivo ZIP desde su sitio oficial):
+Utilizar Git para clonar el repositorio de Palabos (o puede descargar el archivo ZIP desde su sitio oficial):
 
 Bash
 
@@ -86,13 +86,13 @@ Palabos no requiere un paso de "instalación" tradicional (`make install`); en s
 
    - Abrir el `Makefile` con un editor de texto (ej. `nano Makefile` o `vim Makefile`).
 
-   - **Verificar la configuración de MPI:** Asegúrate de que las variables de compilación (como `CXX` y `MPICXX`) apunten a los compiladores de MPI correctos (por defecto suelen ser `mpicxx` o `mpic++`, que ya deberían estar configurados si instalaste `libopenmpi-dev`).
+   - **Verificar la configuración de MPI:** Asegúrarse que las variables de compilación (como `CXX` y `MPICXX`) apunten a los compiladores de MPI correctos (por defecto suelen ser `mpicxx` o `mpic++`, que ya deberían estar configurados si se insto  `libopenmpi-dev`).
 
-   - **Opcional - Optimización:** Puedes ajustar las banderas de optimización si lo deseas (ej. `-O3`).
+   - **Opcional - Optimización:** Puede ajustar las banderas de optimización si lo desea (ej. `-O3`).
 
 3. Compilar el Ejemplo:
 
-   Ejecuta el comando make para compilar el código fuente del ejemplo:
+   Ejecutar el comando make para compilar el código fuente del ejemplo:
 
    Bash
 
@@ -126,7 +126,7 @@ Bash
 mpirun -np 4 ./laminarChannel
 ```
 
-- **`-np 4`**: Indica a MPI que lance el programa y distribuya la carga de trabajo entre **4** procesos (núcleos).
+- **`-np 4`**: Indicar a MPI que lance el programa y distribuya la carga de trabajo entre **4** procesos (núcleos).
 
 ### C. Verificación de Resultados
 
@@ -140,11 +140,11 @@ Si la simulación se ejecuta hasta el final sin errores de segmentación o MPI, 
 
 Para empezar su propio proyecto basado en Palabos:
 
-1. **Crea un Directorio de Proyecto:** Crea una nueva carpeta fuera de la estructura de `palabos/examples`.
+1. **Crea un Directorio de Proyecto:** Crear una nueva carpeta fuera de la estructura de `palabos/examples`.
 
-2. **Copia el Makefile:** Copia el `Makefile` de alguno de los ejemplos de Palabos a tu nuevo directorio de proyecto.
+2. **Copia el Makefile:** Copiar el `Makefile` de alguno de los ejemplos de Palabos a tu nuevo directorio de proyecto.
 
-3. **Modifica la Fuente:** En el `Makefile` de tu proyecto, ajusta la variable `SRC_FILES` para apuntar a tu código fuente C++ personalizado (ej. `mySimulation.cpp`).
+3. **Modifica la Fuente:** En el `Makefile` del proyecto, ajustar la variable `SRC_FILES` para apuntar a tu código fuente C++ personalizado (ej. `mySimulation.cpp`).
 
 4. **Inclusión:** Asegúrarse que el código C++ incluya la cabecera principal de Palabos:
 
