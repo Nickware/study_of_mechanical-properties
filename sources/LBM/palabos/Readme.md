@@ -29,3 +29,129 @@ Palabos es valorado por su capacidad para manejar simulaciones complejas, donde 
 4. **Flujos con Reacciones Químicas:** Permite integrar modelos de reacción dentro de la dinámica del fluido.
 
 En resumen, Palabos es una herramienta esencial para investigadores y profesionales que buscan implementar de forma eficiente simulaciones de fluidos de vanguardia utilizando el enfoque mesoscópico del Lattice Boltzmann.
+
+# Instalar, configurar y testear Palabos
+
+Instalar, configurar y testear **Palabos** en Linux generalmente se realiza compilando el código fuente. Palabos depende de un conjunto de bibliotecas de terceros, siendo **MPI (Message Passing Interface)** crucial para la ejecución paralela.
+
+Aquí se tiene una guía paso a paso para la instalación y configuración básica, seguida de cómo ejecutar el test de la librería.
+
+## 1. Requisitos Previos
+
+Antes de instalar Palabos, asegúrarse de tener las siguientes herramientas y librerías instaladas en tu distribución Linux (ej. Ubuntu, Debian, Fedora):
+
+| **Requisito**           | **Propósito**                                      | **Comando de Instalación (Ej. Ubuntu/Debian)**        |
+| ----------------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| **Compilador C++**      | Necesario para compilar el código fuente.          | `sudo apt update && sudo apt install build-essential` |
+| **MPI (OpenMPI/MPICH)** | Esencial para la ejecución paralela (obligatorio). | `sudo apt install openmpi-bin libopenmpi-dev`         |
+| **Git**                 | Para clonar el repositorio de Palabos.             | `sudo apt install git`                                |
+
+------
+
+## 2. Instalación de Palabos
+
+### A. Obtener el Código Fuente
+
+Utilizar Git para clonar el repositorio de Palabos (o puedes descargar el archivo ZIP desde su sitio oficial):
+
+Bash
+
+```
+git clone https://gitlab.com/unige.ch-cfd/palabos.git
+```
+
+Esto creará una carpeta llamada `palabos` en tu directorio actual.
+
+### B. Compilación de la Librería
+
+Palabos no requiere un paso de "instalación" tradicional (`make install`); en su lugar, se compila la aplicación del usuario vinculándola a la librería Palabos. La configuración se realiza principalmente a través del **Makefile** incluido.
+
+1. **Navega a la Carpeta:**
+
+   Bash
+
+   ```
+   cd palabos
+   ```
+
+2. **Configurar el Makefile:**
+
+   - Palabos utiliza una estructura de directorios modular. Para el test inicial, vamos a usar uno de los ejemplos. Navega a un directorio de prueba, por ejemplo:
+
+     Bash
+
+     ```
+     cd examples/showCases/laminarChannel
+     ```
+
+   - Abrir el `Makefile` con un editor de texto (ej. `nano Makefile` o `vim Makefile`).
+
+   - **Verificar la configuración de MPI:** Asegúrate de que las variables de compilación (como `CXX` y `MPICXX`) apunten a los compiladores de MPI correctos (por defecto suelen ser `mpicxx` o `mpic++`, que ya deberían estar configurados si instalaste `libopenmpi-dev`).
+
+   - **Opcional - Optimización:** Puedes ajustar las banderas de optimización si lo deseas (ej. `-O3`).
+
+3. Compilar el Ejemplo:
+
+   Ejecuta el comando make para compilar el código fuente del ejemplo:
+
+   Bash
+
+   ```
+   make
+   ```
+
+   Si la compilación es exitosa, se creará un archivo ejecutable (con el mismo nombre que el directorio, o el nombre definido en el Makefile, en este caso probablemente `laminarChannel`).
+
+## 3. Testeo y Ejecución
+
+Una vez compilado el ejecutable, puedes probarlo para verificar que Palabos y MPI están funcionando correctamente.
+
+### A. Ejecución en un Solo Núcleo
+
+Para ejecutar la simulación en un solo núcleo de CPU (secuencial):
+
+Bash
+
+```
+./laminarChannel
+```
+
+### B. Ejecución Paralela (Usando MPI)
+
+Para probar la funcionalidad paralela (el corazón de Palabos), utiliza el comando `mpirun` o `mpiexec`. Aquí ejecutaremos el test en 4 núcleos (cambia el número según tu CPU):
+
+Bash
+
+```
+mpirun -np 4 ./laminarChannel
+```
+
+- **`-np 4`**: Indica a MPI que lance el programa y distribuya la carga de trabajo entre **4** procesos (núcleos).
+
+### C. Verificación de Resultados
+
+Una ejecución exitosa producirá mensajes de progreso en la consola y, lo más importante, generará archivos de salida para la visualización.
+
+- **Archivos de Salida:** El ejemplo `laminarChannel` generará archivos en formato **VTK** (o similar) que contienen la distribución de velocidad y presión. Estos archivos son legibles por software de post-procesamiento como **ParaView**.
+
+Si la simulación se ejecuta hasta el final sin errores de segmentación o MPI, y los archivos de salida son generados, la instalación de Palabos es exitosa.
+
+## 4. Configuración Avanzada (Para Proyectos Propios)
+
+Para empezar su propio proyecto basado en Palabos:
+
+1. **Crea un Directorio de Proyecto:** Crea una nueva carpeta fuera de la estructura de `palabos/examples`.
+
+2. **Copia el Makefile:** Copia el `Makefile` de alguno de los ejemplos de Palabos a tu nuevo directorio de proyecto.
+
+3. **Modifica la Fuente:** En el `Makefile` de tu proyecto, ajusta la variable `SRC_FILES` para apuntar a tu código fuente C++ personalizado (ej. `mySimulation.cpp`).
+
+4. **Inclusión:** Asegúrarse que el código C++ incluya la cabecera principal de Palabos:
+
+   C++
+
+   ```
+   #include "palabos.h"
+   ```
+   
+   
