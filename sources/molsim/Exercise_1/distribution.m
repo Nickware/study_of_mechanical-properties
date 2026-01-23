@@ -1,6 +1,6 @@
 function distribution()
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % PROGRAMA DISTRIBUCIÓN DE PARTÍCULAS EN COMPARTIMENTOS
+    % Programa distribución de partículas de compartimientos
     %
     % Versión en Octave del código Fortran original.
     % Simula la distribución aleatoria de N partículas en P compartimentos
