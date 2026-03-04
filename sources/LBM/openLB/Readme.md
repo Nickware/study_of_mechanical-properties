@@ -13,19 +13,19 @@ OpenLB es una herramienta reconocida en la comunidad de investigación y fue una
 - **Orientado a Objetos (C++):** El código está escrito en C++ de manera modular y bien legible, lo que facilita tanto a los programadores de aplicaciones como a los desarrolladores avanzados implementar nuevos modelos LBM personalizados o extender las funcionalidades existentes.
 - **Kernel LBM Completo:** El núcleo de OpenLB se basa en una amplia variedad de modelos Lattice Boltzmann, lo que permite abordar una gran diversidad de problemas físicos.
 
-### 2. Alto Rendimiento y Paralelización
+### 2. Alto rendimiento y paralelización
 
 Una de las fortalezas más grandes de OpenLB es su arquitectura optimizada para la computación de alto rendimiento:
 
 - **Paralelismo Híbrido:** Es eficiente en plataformas de memoria compartida y distribuida. Soporta:
   - **MPI (Message Passing Interface):** Para paralelismo distribuido (clusters de CPU).
   - **OpenMP:** Para paralelismo de memoria compartida (multihilo en una sola CPU).
-  - **CUDA:** Para el uso de **GPUs (Unidades de Procesamiento Gráfico)**, permitiendo simulaciones extremadamente rápidas.
+  - **CUDA:** Para el uso de **GPUs (unidades de procesamiento gráfico)**, permitiendo simulaciones extremadamente rápidas.
 - **Vectorización (SIMD):** Incluye optimizaciones para el procesamiento de datos a nivel de instrucción, mejorando la eficiencia en CPUs.
 
-### 3. Pre-procesamiento y Geometría
+### 3. Preprocesamiento y Geometría
 
-A diferencia de muchos otros *solvers* de CFD, OpenLB tiene capacidades robustas de pre-procesamiento integradas:
+A diferencia de muchos otros *solvers* de CFD, OpenLB tiene capacidades robustas de preprocesamiento integradas:
 
 - **Generación de Malla Automatizada:** Permite utilizar archivos de geometría en formato **STL** (muy común en CAD) o formas geométricas primitivas (cilindros, esferas, etc.). OpenLB genera automáticamente la malla de volumen (voxelización) adaptada a esa geometría.
 - **Condiciones de Contorno:** Soporta la configuración automática de condiciones de contorno complejas.
@@ -50,7 +50,7 @@ Aquí se tiene una guía paso a paso, priorizando el uso de **CMake**, que es el
 
 ## 1. Requisitos y Dependencias
 
-Asegúrarse de tener instalados los siguientes paquetes en tu sistema Linux.
+Asegúrate de tener instalados los siguientes paquetes en tu sistema Linux.
 
 | **Requisito**           | **Propósito**                                          | **Comando de Instalación (Ej. Ubuntu/Debian)**        |
 | ----------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
@@ -63,7 +63,7 @@ Asegúrarse de tener instalados los siguientes paquetes en tu sistema Linux.
 
 ## 2. Instalación de OpenLB
 
-### A. Obtener el Código Fuente
+### A. Obtener el código fuente
 
 Clonar el repositorio oficial de OpenLB usando Git:
 
@@ -109,7 +109,7 @@ Ejecutar `cmake` para configurar el proceso de construcción, decirle dónde enc
   cmake -DWITH_MPI=ON ..
   ```
 
-  > **Nota:** Puede añadir otras opciones aquí, como `-DWITH_CUDA=ON` si quieres soporte para GPU (requiere tener el kit de desarrollo CUDA instalado).
+  > **Nota:** Si puede añadir otras opciones aquí, como `-DWITH_CUDA=ON` de igual modo, si desea soporte para GPU (requiere tener el kit de desarrollo CUDA instalado).
 
 ### D. Compilación
 
@@ -121,9 +121,9 @@ Bash
 make -j <N>
 ```
 
-Donde `<N>` es el número de núcleos (threads) que quieres usar para acelerar la compilación (ej., `make -j 8`).
+Donde `<N>` es el número de núcleos (threads) que quieres usar para acelerar la compilación (p. ej., `make -j 8`).
 
-## 3. Testeo y Verificación
+## 3. Testeo y verificación
 
 Para verificar que OpenLB se instaló correctamente y que las dependencias como MPI funcionan, puedes ejecutar los tests de la librería.
 
@@ -143,13 +143,13 @@ Este comando ejecutará una serie de pruebas automatizadas incluidas en OpenLB. 
 
 Para un test funcional en un problema real, puedes compilar y ejecutar uno de los ejemplos que vienen con la distribución.
 
-1. **Encuentra un Ejemplo:** Navegar a la carpeta de ejemplos (ej. `cd ../examples/poiseuille/`).
+1. **Encuentra un Ejemplo:** Navegar a la carpeta de ejemplos (p. ej. `cd ../examples/poiseuille/`).
 
 2. **Compila el Ejemplo:** Dentro de la carpeta del ejemplo, puede usar un `Makefile` específico (si está presente) o usar el sistema de construcción de CMake si el ejemplo está integrado.
 
 3. Ejecución Paralela (Test Principal):
 
-   Una vez compilado el ejecutable (ej. poiseuille), probar con mpirun:
+   Una vez compilado el ejecutable (ej. Poiseuille), probar con mpirun:
 
    Bash
 
@@ -159,4 +159,4 @@ Para un test funcional en un problema real, puedes compilar y ejecutar uno de lo
 
    - **`-np 4`**: Ejecutar la simulación usando 4 procesos (núcleos de CPU).
 
-Si la simulación se ejecuta hasta el final sin errores de MPI o de segmentación, y genera archivos de salida (típicamente VTK para post-procesamiento), significa que OpenLB está instalado y configurado correctamente.
+Si la simulación se ejecuta hasta el final sin errores de MPI o de segmentación y genera archivos de salida (típicamente VTK para post-procesamiento), significa que OpenLB está instalado y configurado correctamente.
