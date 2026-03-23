@@ -1,4 +1,4 @@
-# calcium_small.py - ¡ÚLTIMA VERSIÓN QUE FUNCIONA!
+# calcium_small.py 
 
 from ase import Atoms
 from ase.io import write
@@ -74,5 +74,5 @@ input_lines += [
 with open('csh_small.nwi', 'w') as f:
     f.write("\n".join(input_lines))
 
-print("✅ Archivo 'csh_small.nwi' generado con 'noautoz'.")
-print("🚀 Ejecuta: nwchem csh_small.nwi > csh_small.nwo")
+print(" Archivo 'csh_small.nwi' generado con 'noautoz'.")
+print(" Ejecuta: nwchem csh_small.nwi > csh_small.nwo")
