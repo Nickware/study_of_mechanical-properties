@@ -1,4 +1,4 @@
-# calcium.py - Geometría inicial más física
+# calcium.py - Geometría inicial 
 
 from ase import Atoms
 from ase.io import write
@@ -7,7 +7,7 @@ from ase.io import write
 # Basado en unidades SiO₄ y Ca²⁺ coordinado a O
 
 positions = [
-    # Ca1 - coordinado a 6 O (aprox 2.4 Å)
+    # Ca1 - coordinado a 6 O (aprox. 2.4 Å)
     [0.0, 0.0, 0.0],  # Ca1
     # Ca2
     [5.0, 5.0, 5.0],  # Ca2
@@ -88,4 +88,4 @@ task dft optimize
 with open('csh_opt.nwi', 'w') as f:
     f.write(nwi)
 
-print("✅ Input generado. Ejecuta: nwchem csh_opt.nwi > csh_opt.nwo")
+print(" Input generado. Ejecuta: nwchem csh_opt.nwi > csh_opt.nwo")
