@@ -53,7 +53,7 @@ positions = [
     [6.8, 6.5, 5.5],  # H9  (en O9)
 ]
 
-symbols = ['Ca']*3 + ['Si']*3 + ['O']*10 + ['H']*9
+symbols = ['Ca']*3 + ['Si']*3 + ['O']*12 + ['H']*9
 
 atoms = Atoms(symbols=symbols, positions=positions)
 atoms.center(vacuum=5.0)  # Espacio alrededor
