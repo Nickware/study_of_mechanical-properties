@@ -46,35 +46,29 @@ write('csh_inicial.cif', atoms)
 # O usar carga basada en estequiometría formal. Aquí usamos **charge=0** como punto inicial.
 
 # --- Bases y ECP ---
-basis = {
-    'Ca': 'lanl2dz',
-    'Si': '6-31g*',
-    'O': '6-31g*',
-    'H': '6-31g*'
-}
-
-ecp = {'Ca': 'lanl2dz'}  # Potencial de core efectivo para calcio
+# Usar bases compatibles con NWChem. Para sistemas grandes, usar bases pequeñas inicialmente
+# 3-21g es más manejable que 6-31g* para 208 átomos
+basis = '3-21g'  # Base uniforme para todos
 
 # --- Funcional DFT con corrección de dispersión ---
 # NWChem soporta DFT-D3(BJ) con 'dispersion d3bj'
+# Para sistemas grandes, usar grid estándar en lugar de xfine
 
 calc = NWChem(
     label='csh_opt_d3',
     theory='dft',
     xc='pbe',                     # GGA-PBE
     basis=basis,
-    ecp=ecp,
     dispersion='d3bj',            # Corrección de dispersión Grimme D3 con Becke-Johnson
     mult=1,                       # Estado singlete (supuesto para sistema cerrado)
     charge=0,                     # Carga total: ajustada a 0 para neutralidad global
-    conv=1e-7,                    # Alta convergencia
-    maxiter=200,
+    convergence={'energy': 1e-6, 'density': 1e-5},  # Convergencia DFT
+    maxiter=150,
     direct=True,
-    grid='xfine',                 # Malla de integración muy fina
+    grid='fine',                  # Malla de integración 'fine' en lugar de 'xfine' (más estable)
     task='optimize',              # Optimización geométrica
-    # Opcional: aumentar precisión de SCF
-    damp=False,                   # Evita problemas de convergencia
-    precision='double'
+    damp=True,                    # Activar damping para mejorar convergencia
+    smear=0.001                   # Broadening pequeño para ayudar SCF
 )
 
 # Asignar calculador
@@ -85,7 +79,7 @@ atoms.calc = calc
 # =============================================================================
 
 print("\nIniciando optimización de geometría con NWChem...")
-print("Funcional: PBE + D3(BJ), Base: 6-31g*/LANL2DZ, Grid: xfine")
+print("Funcional: PBE + D3(BJ), Base: 3-21g, Grid: fine")
 
 optimizer = BFGS(
     atoms,
