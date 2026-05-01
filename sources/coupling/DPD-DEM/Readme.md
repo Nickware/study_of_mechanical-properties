@@ -606,5 +606,3 @@ Storage: ~200 GB (trajectories + analysis)
 - Foco en figuras clave (3-4 principales)
 - Template JCP pre-existente
 - Colaboración escritura especializada
-
-¡Este workflow apoya el proyecto sólido enmarcado a ser sometido a JCP!
