@@ -1,5 +1,15 @@
 # calcium.py - Geometría inicial 
-
+# Este script genera una geometría inicial para un cluster de silicato de calcio (CaSiO₃) con hidrógenos añadidos para simular grupos OH y puentes.
+# La geometría es una aproximación y no representa una estructura cristalina real, pero es más compleja que un cluster simple.
+# El script también genera un archivo de entrada para NWChem con una configuración básica de DFT utilizando el funcional PBE96 y una base 3-21g.
+# Para ejecutar la optimización, guarda este script, ejecútalo para generar el archivo de entrada y luego corre NWChem con el comando indicado al final.
+# Nota: Asegúrate de tener NWChem instalado y configurado correctamente para ejecutar el cálculo. La geometría inicial puede necesitar ajustes dependiendo de los resultados obtenidos y la convergencia del cálculo.
+# Importamos ASE para manejar la geometría y generar el archivo de entrada para NWChem
+# ASE es una herramienta útil para crear y manipular estructuras atómicas, así como para escribir archivos de entrada en diferentes formatos. En este caso, lo usamos para generar un archivo XYZ con la geometría inicial y para facilitar la creación del archivo de entrada de NWChem.
+# Asegúrate de tener ASE instalado en tu entorno de Python para ejecutar este script. Puedes instalarlo usando pip:
+# pip install ase
+# El cluster generado es una aproximación y no representa una estructura cristalina real, pero es más complejo que un cluster simple. La geometría inicial puede necesitar ajustes dependiendo de los resultados obtenidos y la convergencia del cálculo.
+# El archivo de entrada para NWChem se configura para realizar una optimización geométrica utilizando DFT con el funcional PBE96 y una base 3-21g. La multiplicidad se establece en 2 para simular un estado con un electrón desapareado, lo que es común en sistemas con metales de transición o en casos donde se espera que haya radicales libres.
 from ase import Atoms
 from ase.io import write
 

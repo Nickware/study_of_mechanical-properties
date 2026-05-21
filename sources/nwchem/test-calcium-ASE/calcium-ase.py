@@ -1,6 +1,20 @@
 # optimizar_CSH_mejorado.py
 # Optimización DFT de tobermorita 11Å con ASE + NWChem
-
+# Este script realiza una optimización geométrica de la estructura de tobermorita 11Å utilizando el funcional PBE con corrección de dispersión D3(BJ) y una base 3-21g. Se han ajustado parámetros para mejorar la convergencia y obtener resultados más realistas.
+# Asegúrate de tener ASE y NWChem configurados correctamente en tu entorno para
+# ejecutar este script. El archivo 'tobermorite_11A.cif' debe estar en el mismo directorio que este script para cargar la estructura inicial.
+# El script guarda la estructura optimizada en formatos XYZ, CIF y JSON, y proporciona información sobre la energía final, fuerzas y recomendaciones para análisis posteriores. La optimización se realiza con un criterio de fuerza máxima de 0.05 eV/Å para asegurar una geometría razonablemente optimizada.
+# Nota: La geometría inicial y los parámetros de cálculo pueden necesitar ajustes dependiendo de los resultados obtenidos y la convergencia del cálculo. Es recomendable revisar la estructura optimizada visualmente y considerar cálculos adicionales para validar los resultados.
+# Importamos ASE para manejar la geometría y generar el archivo de entrada para NWChem
+# ASE es una herramienta útil para crear y manipular estructuras atómicas, así como para escribir
+# archivos de entrada en diferentes formatos. En este caso, lo usamos para generar un archivo XYZ con la geometría inicial y para facilitar la creación del archivo de entrada de NWChem.
+# Asegúrate de tener ASE instalado en tu entorno de Python para ejecutar este script.
+# Puedes instalarlo usando pip:
+# pip install ase
+# El archivo de entrada para NWChem se configura para realizar una optimización geométrica utilizando DFT con el funcional PBE y corrección de dispersión D3(BJ), junto con una base 3-21g. La multiplicidad se establece en 1 para simular un estado singlete, lo que es común en sistemas cerrados. Se han ajustado parámetros como la malla de integración y el damping para mejorar la convergencia del cálculo.
+# El cluster generado es una aproximación y no representa una estructura cristalina real, pero es más complejo que un cluster simple. La geometría inicial puede necesitar ajustes dependiendo de los resultados obtenidos y la convergencia del cálculo.
+# El script también incluye recomendaciones para análisis posteriores, como la verificación visual de la geometría optimizada, cálculos single-point con funcionales híbridos o bases mayores, y el cálculo de propiedades adicionales como el band gap o funciones de pair distribution (PDF).
+# Nota: Asegúrate de revisar los resultados obtenidos y ajustar los parámetros de cálculo según sea necesario para obtener una optimización exitosa y resultados realistas.
 from ase import Atoms
 from ase.io import read, write
 from ase.optimize import BFGS
