@@ -61,102 +61,38 @@ Asegúrate de tener instalados los siguientes paquetes en tu sistema Linux.
 
 ------
 
-## 2. Instalación de OpenLB
+## 2. Empleo de OpenLB
 
-### A. Obtener el código fuente
+### Obtener el código fuente
 
 Clonar el repositorio oficial de OpenLB usando Git:
 
 Bash
 
 ```
-git clone https://github.com/OpenLB/openlb.git
+git clone https://gitlab.com/openlb/release.git olb-release
 ```
 
-Esto creará una carpeta llamada `openlb`.
-
-### B. Creación del Directorio de Compilación (Out-of-Source Build)
-
-Es una práctica recomendada realizar la compilación en un directorio separado del código fuente (`out-of-source build`). Esto mantiene el código fuente limpio.
-
-Bash
-
-```
-cd openlb
-mkdir build
-cd build
-```
-
-### C. Configuración con CMake
-
-Ejecutar `cmake` para configurar el proceso de construcción, decirle dónde encontrar las dependencias y definir las opciones de compilación.
-
-- **Configuración Básica:**
-
-  Bash
-
-  ```
-  cmake ..
-  ```
-
-- Configuración con Paralelismo (MPI):
-
-  Si se quiere asegurar que la librería se construya con soporte para MPI (lo cual es crucial para el rendimiento), puedes especificarlo explícitamente (aunque a menudo CMake lo detecta automáticamente):
-
-  Bash
-
-  ```
-  cmake -DWITH_MPI=ON ..
-  ```
-
-  > **Nota:** Si puede añadir otras opciones aquí, como `-DWITH_CUDA=ON` de igual modo, si desea soporte para GPU (requiere tener el kit de desarrollo CUDA instalado).
-
-### D. Compilación
-
-Una vez que CMake ha generado los `Makefiles`, puedes compilar la librería:
-
-Bash
-
-```
-make -j <N>
-```
-
-Donde `<N>` es el número de núcleos (threads) que quieres usar para acelerar la compilación (p. ej., `make -j 8`).
+Esto creará una carpeta llamada `olb-release`.
 
 ## 3. Testeo y verificación
 
-Para verificar que OpenLB se instaló correctamente y que las dependencias como MPI funcionan, puedes ejecutar los tests de la librería.
+Para verificar OpenLB se pueden ejecutar los ejemplos
 
-### A. Ejecutar los Tests de Unidad
+### Ejecutar un Ejemplo Simple
 
-La forma más directa de probar la funcionalidad de la librería es mediante el comando `ctest`, que fue configurado por CMake:
+Para un test funcional en un problema, se puede compilar y ejecutar uno de los ejemplos que vienen en la fuente.
+
+1. **Encuentre un Ejemplo:** Navegar a la carpeta de ejemplos (p. ej. `cd ../examples/laminar/cavity2d/`).
+
+2. **Compilar el Ejemplo:** Dentro de la carpeta del ejemplo, puede usar el comando 
 
 Bash
 
 ```
-ctest
+make
 ```
 
-Este comando ejecutará una serie de pruebas automatizadas incluidas en OpenLB. Si todos los tests pasan, verás un resultado de éxito al final.
+Si la simulación se ejecuta hasta el final sin errores de MPI o de segmentación y genera archivos de salida (típicamente VTK para post-procesamiento), significa que el ejemplo se ha construido correctamente.
 
-### B. Ejecutar un Ejemplo Simple
-
-Para un test funcional en un problema real, puedes compilar y ejecutar uno de los ejemplos que vienen con la distribución.
-
-1. **Encuentra un Ejemplo:** Navegar a la carpeta de ejemplos (p. ej. `cd ../examples/poiseuille/`).
-
-2. **Compila el Ejemplo:** Dentro de la carpeta del ejemplo, puede usar un `Makefile` específico (si está presente) o usar el sistema de construcción de CMake si el ejemplo está integrado.
-
-3. Ejecución Paralela (Test Principal):
-
-   Una vez compilado el ejecutable (ej. Poiseuille), probar con mpirun:
-
-   Bash
-
-   ```
-   mpirun -np 4 ./poiseuille
-   ```
-
-   - **`-np 4`**: Ejecutar la simulación usando 4 procesos (núcleos de CPU).
-
-Si la simulación se ejecuta hasta el final sin errores de MPI o de segmentación y genera archivos de salida (típicamente VTK para post-procesamiento), significa que OpenLB está instalado y configurado correctamente.
+## 4. Postprocessing
