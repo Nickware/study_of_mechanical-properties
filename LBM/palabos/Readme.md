@@ -58,9 +58,19 @@ git clone https://gitlab.com/unigespc/palabos.git
 
 Esto creará una carpeta llamada `palabos` en tu directorio actual.
 
-### B. Compilación de la Librería
+### B. Instalación de prerequisitos
 
-Palabos no requiere un paso de "instalación" tradicional (`make install`); en su lugar, se compila la aplicación del usuario vinculándola a la librería Palabos. La configuración se realiza principalmente a través del **Makefile** incluido.
+Para que palabos funcione correctamente se requieren los siguientes paquetes.
+
+#### Distribuciones derivadas Debian
+
+Bash
+```
+$ sudo apt install gcc clang clang-format cmake make libtbb-dev
+```
+### C. Compilación de la Librería
+
+Palabos no requiere un paso de "instalación" tradicional (`make install`); en su lugar, se compila las aplicaciones vinculándolas a la librería Palabos. La configuración se realiza principalmente a través del **Makefile** incluido.
 
 1. **Navega a la carpeta:**
 
@@ -80,6 +90,11 @@ Palabos no requiere un paso de "instalación" tradicional (`make install`); en s
      cd examples/showCases/laminarChannel/build
      ```
 
+   - Abrir el `Makefile` con un editor de texto (p. ej. `nano Makefile` o `vim Makefile`).
+   - **Verificar la configuración de MPI:** Asegurarse de que las variables de compilación (como `CXX` y `MPICXX`) apunten a los compiladores de MPI correctos (por defecto suelen ser `mpicxx` o `mpic++`, que ya deberían estar configurados si se instalo `libopenmpi-dev`).
+   - **Opcional - Optimización:** Puede ajustar las banderas de optimización si lo desea (p. ej. `-O3`).
+
+
 3. **Compilar el ejemplo**:
 
    Ejecutar el comando make para compilar el código fuente del ejemplo:
@@ -91,14 +106,10 @@ Palabos no requiere un paso de "instalación" tradicional (`make install`); en s
    ```
 
    Si la compilación es exitosa, se creará un archivo ejecutable (con el mismo nombre que el directorio, o el nombre definido en el Makefile, en este caso probablemente `laminarChannel`).
-   
-   - Abrir el `Makefile` con un editor de texto (p. ej. `nano Makefile` o `vim Makefile`).
-   - **Verificar la configuración de MPI:** Asegurarse de que las variables de compilación (como `CXX` y `MPICXX`) apunten a los compiladores de MPI correctos (por defecto suelen ser `mpicxx` o `mpic++`, que ya deberían estar configurados si se instalo `libopenmpi-dev`).
-   - **Opcional - Optimización:** Puede ajustar las banderas de optimización si lo desea (p. ej. `-O3`).
 
 ## 3. Testeo y Ejecución
 
-Una vez compilado el ejecutable, puedes probarlo para verificar que Palabos y MPI están funcionando correctamente.
+Una vez construido el ejecutable, se puede probar así:
 
 ### A. Ejecución en un Solo Núcleo
 
@@ -124,7 +135,7 @@ mpirun -np 4 ./laminarChannel
 
 ### C. Verificación de Resultados
 
-Una ejecución exitosa producirá mensajes de progreso en la consola y, lo más importante, generará archivos de salida para la visualización.
+Una ejecución exitosa producirá mensajes de progreso en la consola y, generará archivos de salida para la visualización.
 
 - **Archivos de Salida:** El ejemplo `laminarChannel` generará archivos en formato **VTK** (o similar) que contienen la distribución de velocidad y presión. Estos archivos son legibles por software de posprocesamiento como **ParaView**.
 
@@ -136,7 +147,7 @@ Para empezar un propio proyecto basado en Palabos:
 
 1. **Crear un Directorio de Proyecto:** Crear una nueva carpeta fuera de la estructura de `palabos/examples`.
 
-2. **Copiar el Makefile:** Copiar el `Makefile` de alguno de los ejemplos de Palabos a tu nuevo directorio de proyecto.
+2. **Copiar el Makefile:** Copiar el `Makefile` de alguno de los ejemplos de Palabos al nuevo directorio de proyecto.
 
 3. **Modificar la fuente:** En el `Makefile` del proyecto, ajustar la variable `SRC_FILES` para apuntar al código fuente C++ personalizado (p. ej., `mySimulation.cpp`).
 
