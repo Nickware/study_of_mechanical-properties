@@ -158,5 +158,47 @@ Para empezar un propio proyecto basado en Palabos:
    ```
    #include "palabos.h"
    ```
-   
+
+  # Adiciones al README de Palabos
+
+## 1. Requisitos Previos
+
+Palabos en sí mismo depende de muy poco: en su forma más básica solo necesita un compilador C++ y, opcionalmente, MPI. La confusión suele venir de mezclar el flujo de compilación **clásico por Makefile** (el que se usa históricamente en cada carpeta de `examples/showCases/...`) con el flujo **CMake**, que es el que usa el repositorio principal (`CMakeLists.txt` en la raíz) y el que recomienda hoy el proyecto para compilar la librería completa o integrarla en un proyecto propio. Ambos flujos existen y son válidos, pero no piden exactamente lo mismo.
+
+### A. Necesario en cualquiera de los dos flujos
+
+| Requisito | Propósito | Comando (Ubuntu/Debian) |
+|---|---|---|
+| **Compilador C++ (GCC o Clang)** | Compila el código fuente de Palabos y de tus aplicaciones. | `sudo apt install build-essential` (incluye GCC) |
+| **Git** | Clonar el repositorio. | `sudo apt install git` |
+| **Make** | Backend de compilación, invocado directamente en el flujo de Makefile o generado por CMake en el otro. | `sudo apt install make` |
+
+### B. Solo si compilas con el flujo Makefile clásico (por ejemplo)
+
+Este es el flujo que describe el resto de esta guía: entrar a `examples/showCases/<ejemplo>/build` (o carpeta equivalente) y ejecutar `make` directamente contra el Makefile de ese ejemplo. No necesitas CMake para esto — el Makefile ya trae las banderas de compilación resueltas.
+
+- Compilador C++ y MPI (ver tabla A y C).
+
+### C. Solo si compilas con el flujo CMake (librería completa o proyecto propio vía `CMakeLists.txt`)
+
+| Requisito | Propósito | Comando (Ubuntu/Debian) |
+|---|---|---|
+| **CMake** | Genera los archivos de compilación a partir de `CMakeLists.txt`. | `sudo apt install cmake` |
+| **Clang** | Alternativa/complemento a GCC; algunos `showCases` y el pipeline de CI del proyecto compilan con ambos para detectar problemas de portabilidad. | `sudo apt install clang` |
+| **clang-format** | Solo si vas a contribuir código y quieres respetar el estilo del proyecto; no afecta la compilación. | `sudo apt install clang-format` |
+
+### D. Opcionales / recomendados (afectan funcionalidad, no la compilación mínima)
+
+| Paquete | Para qué sirve | Comando |
+|---|---|---|
+| **OpenMPI** (`openmpi-bin`, `libopenmpi-dev`) | Ejecución paralela. La mayoría de los `showCases` lo usan por defecto, así que en la práctica es casi obligatorio si vas a correr ejemplos tal cual vienen, pero la librería puede compilarse y correr en un solo núcleo sin él. | `sudo apt install openmpi-bin libopenmpi-dev` |
+| **HDF5** (`libhdf5-dev`, `libhdf5-mpi-dev`) | Habilita la salida en formato HDF5 en los ejemplos que lo soportan. | `sudo apt install libhdf5-dev libhdf5-mpi-dev` |
+| **ImageMagick** | Algunos ejemplos generan `.gif` invocando `convert`. | `sudo apt install imagemagick` |
+| **ccache** | Acelera recompilaciones repetidas; útil en desarrollo iterativo. | `sudo apt install ccache` |
+
+> **Nota sobre `libtbb-dev`:** no aparece como requisito en la documentación oficial del proyecto (ni en el flujo Makefile ni en el CMake estándar). Es posible que tu versión o el ejemplo específico que estás siguiendo (por ejemplo, algún acoplamiento GPU o con otra librería) sí lo necesite, pero antes de dejarlo como requisito general en el README conviene confirmar contra el `CMakeLists.txt` o el Makefile del ejemplo puntual que lo pide — de lo contrario alguien podría instalarlo sin necesitarlo, o al revés, omitirlo pensando que es solo para formato de código (fácil de confundir con `clang-format`).
+
+Con esta separación, la tabla original de la sección 1 del README puede quedar solo con lo que es verdaderamente necesario para *cualquier* instalación (tabla A), y remitir a las tablas C y D según el flujo que la persona vaya a seguir.
+
+---
    
