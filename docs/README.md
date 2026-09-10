@@ -7,6 +7,7 @@ Esta guia describe como preparar un entorno reproducible y ejecutar los ejemplos
 | Tecnologia | Ejemplos locales | Lenguaje | Proposito |
 |---|---|---|---|
 | LAMMPS + AIREBO | `lammps/airebo` | LAMMPS y Python | Dinamica molecular de polietileno |
+| LAMMPS + ClayFF | `lammps/clayff` | LAMMPS y Octave/MATLAB | Modelado de C-S-H y sistemas con PE |
 | NWChem + ASE | `nwchem/` | Python y NWChem | Geometrias, energia y optimizacion DFT |
 | OpenLB | `LBM/openLB/Readme.md` | C++ | Lattice Boltzmann para fluidos y transporte |
 | Palabos | `LBM/palabos/Readme.md` | C++ | Lattice Boltzmann paralelo |
@@ -145,13 +146,70 @@ which lammps
 which lmp_serial
 ```
 
-El ejemplo AIREBO necesita el archivo de potencial `CH.airebo`. LAMMPS debe poder encontrarlo en su directorio de potenciales o mediante la ruta configurada en el sistema. Antes de ejecutar, localizarlo:
+El ejemplo AIREBO necesita el archivo de potencial `CH.airebo`. El archivo oficial se puede descargar desde el repositorio de LAMMPS:
+
+- [CH.airebo en el repositorio oficial de LAMMPS](https://raw.githubusercontent.com/lammps/lammps/develop/potentials/CH.airebo)
+
+Descargarlo directamente en el directorio del ejemplo:
+
+```bash
+cd /tmp/study_of_mechanical-properties/lammps/airebo
+curl -fL https://raw.githubusercontent.com/lammps/lammps/develop/potentials/CH.airebo \
+  -o CH.airebo
+```
+
+Comprobar que la descarga no esta vacia y que corresponde a un archivo de potencial:
+
+```bash
+test -s CH.airebo
+head -5 CH.airebo
+```
+
+#### Configuracion usando el directorio del ejemplo
+
+La configuracion actual de [in.airebo](../lammps/airebo/in.airebo) usa:
+
+```lammps
+pair_coeff          * * CH.airebo C H
+```
+
+Por ello, la forma mas sencilla es dejar `CH.airebo` en `lammps/airebo/` y ejecutar LAMMPS desde ese directorio. Verificarlo antes de ejecutar:
+
+```bash
+test -s /tmp/study_of_mechanical-properties/lammps/airebo/CH.airebo \
+  && echo "CH.airebo encontrado" \
+  || echo "Falta CH.airebo"
+```
+
+#### Configuracion usando otra ruta
+
+Si el potencial se guarda en otro directorio, editar temporalmente `in.airebo` y sustituir la línea `pair_coeff` por la ruta completa:
+
+```lammps
+pair_coeff          * * /ruta/al/directorio/CH.airebo C H
+```
+
+También puede usarse una variable para no repetir la ruta:
+
+```lammps
+variable            airebo_file string /ruta/al/directorio/CH.airebo
+pair_style          airebo 3.0 1 1
+pair_coeff          * * ${airebo_file} C H
+```
+
+En este caso, comprobar la ruta antes de ejecutar:
+
+```bash
+test -s /ruta/al/directorio/CH.airebo
+```
+
+Si se utiliza la instalación de Conda/Mamba, también se puede buscar un archivo existente dentro del entorno:
 
 ```bash
 find "$CONDA_PREFIX" -name CH.airebo -print
 ```
 
-Si no aparece, descargar o copiar el archivo desde una distribucion de LAMMPS compatible y colocar una copia en `lammps/airebo/`, o definir una ruta de potenciales apropiada. No se debe ejecutar el caso hasta comprobar que `pair_coeff * * CH.airebo C H` puede abrir ese archivo.
+Si no aparece, descargarlo desde el enlace oficial anterior. No se debe ejecutar el caso hasta comprobar que `CH.airebo` existe y que `pair_coeff * * CH.airebo C H` puede abrirlo.
 
 Desde la raiz del repositorio:
 
@@ -179,6 +237,88 @@ python 2-more-variables.py
 ```
 
 Los scripts leen `log.airebo`. Necesitan una sesion grafica para mostrar las figuras; en un servidor sin interfaz se puede configurar Matplotlib con un backend no interactivo y guardar las figuras en archivos.
+
+### LAMMPS + ClayFF
+
+El directorio [lammps/clayff](../lammps/clayff/) contiene dos casos de LAMMPS y un script Octave/MATLAB para generar posiciones:
+
+- `base_script.in` usa `clay_structure.data`.
+- `csh_pe_simulation.in` usa `csh_pe_structure.data`.
+- `script_data.m` genera `generated_positions.data` con posiciones aleatorias.
+
+#### Estado actual del ejemplo
+
+Aunque el directorio se llama `clayff`, los inputs actuales no contienen aun una parametrizacion ClayFF completa. Ambos usan:
+
+```lammps
+pair_style          lj/cut 10.0
+pair_coeff          * * 0.1 3.5
+```
+
+Esto es un modelo Lennard-Jones generico de prueba, no el potencial ClayFF validado. Para una simulacion ClayFF real se necesita descargar y documentar el conjunto de parametros ClayFF correspondiente a la version utilizada, incluyendo cargas atomicas, tipos atomicos, parametros Lennard-Jones y reglas de combinacion. El archivo de parametros no esta incluido actualmente en este repositorio.
+
+#### Requisitos
+
+LAMMPS se instala en el mismo entorno Conda/Mamba usado para AIREBO:
+
+```bash
+mamba activate mechanical-properties
+mamba install -n mechanical-properties -c conda-forge lammps
+which lmp
+```
+
+Para generar nuevas posiciones con `script_data.m`, se necesita GNU Octave o MATLAB. Con Octave en Ubuntu/Debian:
+
+```bash
+sudo apt install -y octave
+which octave
+```
+
+#### Ejecutar los inputs actuales
+
+Desde el directorio del ejemplo:
+
+```bash
+cd /tmp/study_of_mechanical-properties/lammps/clayff
+mamba activate mechanical-properties
+lmp -in base_script.in -log log.clay_structure
+lmp -in csh_pe_simulation.in -log log.csh_pe
+```
+
+Antes de considerar exitoso el caso, revisar los logs:
+
+```bash
+grep -E "ERROR|Dangerous builds|Loop time|Total wall time" log.clay_structure log.csh_pe
+ls -lh output.xyz
+```
+
+El archivo `output.xyz` puede abrirse con OVITO o VMD. Como ambos inputs usan el mismo nombre de salida, conviene ejecutar un caso, renombrar o mover `output.xyz` y luego ejecutar el segundo.
+
+#### Generar una estructura con Octave
+
+El script genera un archivo de posiciones aleatorias. Ejecutarlo desde la carpeta de ClayFF:
+
+```bash
+cd /tmp/study_of_mechanical-properties/lammps/clayff
+octave --no-gui script_data.m
+ls -lh generated_positions.data
+```
+
+El archivo generado solo contiene la seccion `Atoms`; para usarlo en una simulacion completa deben añadirse la caja, masas, tipos, enlaces, angulos, cargas y cualquier otra seccion requerida por `atom_style full`.
+
+#### Requisitos para convertirlo en ClayFF real
+
+Antes de estudiar propiedades mecanicas de C-S-H o de un compuesto C-S-H/PE, se deben completar y verificar:
+
+1. tipos atomicos y cargas coherentes con ClayFF;
+2. masas de cada especie;
+3. parametros `pair_coeff` por par de tipos;
+4. `bond_coeff` y `angle_coeff` para todos los enlaces y angulos presentes;
+5. geometria y densidad iniciales fisicamente validas;
+6. minimizacion, equilibrio NVT/NPT y controles de estabilidad;
+7. validacion de densidad, estructura, energia y propiedades mecanicas frente a referencias.
+
+Si se ejecuta el input actual sin coeficientes de enlaces y angulos, LAMMPS puede detenerse con un error indicando que faltan `Bond coeffs` o `Angle coeffs`. Ese error refleja que el ejemplo esta incompleto como modelo de fuerza, no un problema de instalacion de LAMMPS.
 
 ### NWChem + ASE
 
