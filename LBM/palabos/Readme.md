@@ -135,13 +135,175 @@ mpirun -np 4 ./laminarChannel
 
 #### 3.3 Verificación de resultados
 
-Una ejecución exitosa producirá mensajes de progreso en la consola y, generará archivos de salida para la visualización.
+Una ejecución exitosa debe terminar sin errores de segmentación ni errores de MPI y debe generar mensajes de progreso o un resumen final. La generación de archivos de salida debe verificarse por separado, porque depende del ejemplo y de la versión de Palabos.
 
-- **Archivos de Salida:** El ejemplo `laminarChannel` generará archivos en formato **VTK** (o similar) que contienen la distribución de velocidad y presión. Estos archivos son legibles por software de posprocesamiento como **ParaView**.
+Desde el directorio del ejemplo, localizar los resultados:
 
-Si la simulación se ejecuta hasta el final sin errores de segmentación o MPI y los archivos de salida son generados, la instalación de Palabos es exitosa.
+```bash
+find . -type f \( -name '*.vtk' -o -name '*.vti' -o -name '*.vtu' \
+   -o -name '*.pvtu' -o -name '*.pvd' -o -name '*.h5' \) -print | sort
+```
 
-### 4. Configuración avanzada para proyectos propios
+Los archivos VTK, VTU, PVTU o PVD pueden abrirse con ParaView. En una ejecución MPI se debe abrir preferentemente el archivo maestro (`.pvtu` o `.pvd`) y no una pieza individual.
+
+Si no se generan resultados, revisar el código fuente del ejemplo, el `Makefile` y las llamadas de escritura. No todos los casos escriben archivos automáticamente.
+
+## 4. Caso de estudio: flujo laminar en un canal
+
+El ejemplo `laminarChannel` se utiliza aquí como caso de estudio para verificar el ciclo completo de Palabos: compilar una aplicación, ejecutarla, inspeccionar sus archivos y extraer magnitudes físicas. Es un caso de validación de flujo, no un modelo de propiedades mecánicas de un sólido.
+
+### 4.1 Objetivo
+
+El objetivo es comprobar que el campo de velocidad y las variables hidrodinámicas evolucionan de forma razonable en un canal laminar. La comparación debe hacerse con la documentación y los parámetros de la versión descargada, ya que la geometría, el número de pasos, el caudal y los nombres de salida pueden cambiar entre releases.
+
+### 4.2 Ejecutar el caso
+
+Después de compilar desde `examples/showCases/laminarChannel/build`, ejecutar primero en serie:
+
+```bash
+./laminarChannel
+```
+
+Guardar la salida de consola para revisar errores y tiempos:
+
+```bash
+./laminarChannel 2>&1 | tee laminarChannel.serial.log
+```
+
+Cuando el caso secuencial funcione, probar MPI:
+
+```bash
+mpirun -np 4 ./laminarChannel 2>&1 | tee laminarChannel.mpi.log
+```
+
+No comparar dos ejecuciones como si fueran idénticas si utilizan distinto número de procesos sin comprobar que el caso y las condiciones iniciales son reproducibles.
+
+### 4.3 Identificar los archivos de salida
+
+Al finalizar cada ejecución, revisar los archivos generados:
+
+```bash
+find . -type f \( -name '*.vtk' -o -name '*.vti' -o -name '*.vtu' \
+   -o -name '*.pvtu' -o -name '*.pvd' \) -printf '%TY-%Tm-%Td %TH:%TM %10s %p\n' | sort
+```
+
+Interpretar los archivos según su función:
+
+- `.vtk`, `.vti` o `.vtu`: datos de un instante o una malla concreta.
+- `.pvtu`: colección de piezas producidas por una ejecución paralela.
+- `.pvd`: colección temporal que permite recorrer varios instantes.
+
+Los nombres exactos deben confirmarse en la carpeta del ejemplo. Si solo hay archivos de geometría o no hay resultados, la aplicación puede no tener habilitada la escritura o puede requerir una configuración adicional.
+
+### 4.4 Abrir y visualizar en ParaView
+
+Instalar ParaView si es necesario:
+
+```bash
+sudo apt install -y paraview
+paraview
+```
+
+Seguir este flujo:
+
+1. Seleccionar **File > Open**.
+2. Abrir el `.pvd` si existe; así se carga la secuencia temporal completa.
+3. Si el caso fue paralelo, abrir el `.pvtu` maestro.
+4. Si solo existe una salida individual, abrir `.vtk`, `.vti` o `.vtu`.
+5. Pulsar **Apply**.
+6. Usar **Color By** para seleccionar velocidad, presión, densidad u otra variable disponible.
+7. Pulsar **Rescale to Data Range** y activar la leyenda desde **View > Color Map Editor**.
+8. Usar **Play** para comprobar la evolución temporal.
+
+No seleccionar una variable solo por su nombre: comprobar si está almacenada como `Point Data` o `Cell Data` y documentar qué campo representa.
+
+### 4.5 Extraer un perfil de velocidad
+
+Para analizar cuantitativamente el flujo del canal:
+
+1. Seleccionar el conjunto de datos cargado.
+2. Aplicar **Filters > Data Analysis > Plot Over Line**.
+3. Definir una línea transversal al canal en una posición donde el flujo esté desarrollado.
+4. Pulsar **Apply**.
+5. Seleccionar la componente de velocidad disponible.
+6. Exportar la tabla mediante **File > Save Data** en CSV.
+
+Guardar junto al CSV las coordenadas de los extremos de la línea, el instante temporal, la variable utilizada y las unidades lattice o físicas. Si el campo de velocidad tiene componentes separadas, indicar cuál se analizó.
+
+### 4.6 Mediciones adicionales
+
+Según las variables exportadas por el ejemplo, pueden utilizarse estos filtros:
+
+- **Calculator:** calcular la magnitud de la velocidad o una expresión derivada.
+- **Slice:** inspeccionar un plano longitudinal o transversal.
+- **Contour:** localizar superficies de presión o velocidad constante.
+- **Stream Tracer:** observar líneas de corriente.
+- **Integrate Variables:** obtener integrales sobre una superficie o volumen.
+- **Plot Selection Over Time:** seguir una variable en una posición seleccionada.
+
+Si se necesita una magnitud que no aparece en los archivos, debe añadirse su escritura en el código del ejemplo y recompilar. Para repetir el análisis, guardar el estado de ParaView con **File > Save State** en un archivo `.pvsm`.
+
+### 4.7 Validar el caso
+
+Antes de considerar validado el caso `laminarChannel`, comprobar:
+
+- que la ejecución alcanza el número de pasos previsto;
+- que los archivos temporales aparecen en el orden esperado;
+- que el perfil de velocidad cambia de forma coherente entre el inicio y el régimen estacionario;
+- que el perfil y el caudal no dependen de forma inesperada del número de procesos MPI;
+- que el refinamiento espacial y el paso temporal son suficientes;
+- que las unidades lattice están documentadas antes de convertirlas a unidades físicas;
+- que, cuando sea posible, el perfil se compara con una solución analítica o una referencia del ejemplo.
+
+La captura de pantalla demuestra que el resultado puede visualizarse, pero el perfil exportado, la convergencia temporal y la comparación cuantitativa son los elementos que convierten la ejecución en un caso de estudio reproducible.
+
+## 5. Caso de estudio: C-S-H con inclusiones de PET
+
+El documento [case_silicato_calcio_hidratado.md](case_silicato_calcio_hidratado.md) propone un caso de estudio LBM para analizar agua de poro y una segunda fase no mojante dentro de una matriz porosa de silicato de calcio hidratado (C-S-H), usada como proxy mesoscópico de inclusiones de PET.
+
+### 5.1 Qué estudia
+
+El caso combina:
+
+- una geometría porosa sintética o derivada de micro-CT;
+- un modelo Shan-Chen multicomponente;
+- calibración de la interacción fluido-fluido y fluido-sólido;
+- comparación de una matriz C-S-H con y sin inclusiones;
+- análisis de saturación de agua, mojabilidad y permeabilidad efectiva.
+
+### 5.2 Estado de implementación
+
+Este caso es una especificación metodológica y un esqueleto de adaptación, no un ejecutable incluido en este repositorio. Los fragmentos de C++ deben integrarse en una versión concreta de `examples/showCases/multiComponent2d` y ajustarse a la API de Palabos descargada. En particular, deben implementarse y verificarse la inicialización de los lattices, el acoplamiento Shan-Chen, las condiciones de frontera, la escritura VTK/PVD y la definición de las unidades.
+
+Por tanto, la ejecución no debe comenzar con una interpretación física de los valores propuestos. Primero debe compilar un caso mínimo de dos fases y comprobarse la estabilidad de la interfaz.
+
+### 5.3 Secuencia recomendada
+
+1. Compilar y ejecutar un ejemplo multicomponente oficial de Palabos.
+2. Reproducir una gota sobre una superficie plana para calibrar el ángulo de contacto.
+3. Sustituir la superficie plana por una geometría porosa simple.
+4. Añadir la máscara de C-S-H y comprobar conservación de masa.
+5. Añadir las inclusiones de PET como segunda componente y comparar saturación.
+6. Ejecutar los casos con y sin inclusiones bajo las mismas condiciones.
+7. Extraer $S_w(t)$, ángulo de contacto, caudal, caída de presión y permeabilidad.
+8. Repetir con otra resolución lattice y documentar la sensibilidad a `G_fluidFluid` y `G_fluidSolid`.
+
+### 5.4 Postprocesamiento del caso
+
+El postprocesamiento debe seguir este orden:
+
+1. Abrir el archivo `.pvd` o `.pvtu` en ParaView.
+2. Verificar que se exportaron la máscara sólida, el indicador de agua/PET, velocidad y presión.
+3. Aplicar **Threshold**, **Slice** y **Contour** para separar matriz, poros e interfaz.
+4. Calcular la saturación de agua sobre el volumen poroso, excluyendo el sólido.
+5. Ajustar el ángulo de contacto en el caso de calibración y reportar después el ángulo aparente en la geometría porosa.
+6. Usar **Calculator** e **Integrate Variables** para obtener caudal y caída de presión.
+7. Calcular la permeabilidad mediante la ley de Darcy, manteniendo explícita la conversión de unidades lattice a físicas.
+8. Exportar las series temporales y guardar un estado `.pvsm` reproducible.
+
+Las definiciones, ecuaciones, criterios de validación y comandos de inspección están documentados en [case_silicato_calcio_hidratado.md](case_silicato_calcio_hidratado.md).
+
+## 6. Configuración avanzada para proyectos propios
 
 Para empezar un propio proyecto basado en Palabos:
 
@@ -159,7 +321,7 @@ Para empezar un propio proyecto basado en Palabos:
    #include "palabos.h"
    ```
 
-## 5. Notas sobre los flujos de compilación
+## 7. Notas sobre los flujos de compilación
 
 La guía anterior describe el flujo clásico mediante `Makefile`, que es el más directo para ejecutar los ejemplos de `examples/showCases`. En este flujo no es necesario instalar CMake: el `Makefile` del ejemplo contiene las reglas y rutas de compilación.
 

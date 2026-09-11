@@ -95,11 +95,85 @@ mpirun -np 4 ./cshPetMultiphase
 
 ### Paso 6 — Postprocesamiento
 
-La salida en formato VTK se abre en ParaView, igual que en los demás ejemplos del README. Las magnitudes de interés para este caso de estudio son:
+El postprocesamiento debe comenzar comprobando qué variables escribe realmente la aplicación. No basta con abrir una imagen de la interfaz: para este caso hay que conservar los campos de fase, la geometría sólida, la velocidad y la presión, además del instante temporal y la conversión entre unidades lattice y físicas.
 
-- **Saturación de agua** dentro del espacio poroso, para cuantificar aire atrapado cerca de las inclusiones de PET.
-- **Ángulo de contacto local** en la interfaz agua-PET-poro, comparado contra el valor de calibración del Paso 4.
-- **Permeabilidad efectiva** de la matriz C-S-H con y sin inclusiones, para relacionar la mojabilidad con el desempeño de transporte de humedad del material compuesto.
+#### 6.1 Verificar los archivos de salida
+
+Después de ejecutar el caso, localizar las salidas:
+
+```bash
+find . -type f \( -name '*.vtk' -o -name '*.vti' -o -name '*.vtu' \
+    -o -name '*.pvtu' -o -name '*.pvd' \) -print | sort
+```
+
+Abrir en ParaView el archivo `.pvd` si existe, porque normalmente agrupa los instantes temporales. Para una ejecución MPI, abrir el archivo maestro `.pvtu`; no abrir una pieza individual. Si no se generan archivos, revisar las llamadas de escritura del código y habilitar explícitamente las variables necesarias.
+
+#### 6.2 Visualizar la geometría y las fases
+
+En ParaView:
+
+1. Seleccionar **File > Open** y abrir la colección temporal o el archivo de salida.
+2. Pulsar **Apply**.
+3. Mostrar la máscara sólida de C-S-H con **Threshold** o **Contour** si fue exportada.
+4. Seleccionar el campo indicador de agua o PET en **Color By**.
+5. Aplicar **Slice** para observar el interior de la matriz porosa.
+6. Usar **Contour** para aproximar la interfaz entre agua y la segunda fase.
+7. Activar la leyenda y documentar si el campo es `Point Data` o `Cell Data`.
+
+La variable de fase debe estar definida de forma inequívoca. Por ejemplo, debe documentarse qué intervalo representa agua, PET y sólido, y si `petPhase = 1.9` es una densidad inicial o una fracción de volumen. No debe llamarse directamente "PET" a una segunda componente fluida sin aclarar que es un proxy mesoscópico de la inclusión.
+
+#### 6.3 Calcular la saturación de agua
+
+La saturación de agua se calcula sobre el volumen poroso, excluyendo la matriz sólida y las celdas que correspondan a la segunda fase según la definición del modelo:
+
+$$
+S_w = \frac{V_{agua}}{V_{poros}}
+$$
+
+En ParaView se puede obtener mediante **Threshold** sobre el indicador de agua, seguido de **Integrate Variables**, si el campo y el criterio de fase lo permiten. Si el campo es una fracción continua, se debe integrar esa fracción en lugar de contar celdas. Exportar el resultado a CSV para cada instante y graficar $S_w(t)$.
+
+Documentar el umbral utilizado, el volumen de la matriz excluido y la definición de poro. La saturación debe compararse entre el sistema sin inclusiones y el sistema con PET, usando la misma geometría y el mismo criterio.
+
+#### 6.4 Medir el ángulo de contacto
+
+El ángulo de contacto no debe leerse directamente de una imagen sin calibración. El procedimiento recomendado es:
+
+1. Ejecutar primero una gota de agua sobre una superficie plana con los mismos parámetros de interacción.
+2. Ajustar `G_fluidSolid` hasta reproducir el ángulo experimental agua-PET dentro de la incertidumbre elegida.
+3. Guardar la relación entre `G_fluidSolid` y el ángulo medido.
+4. Ejecutar la geometría porosa de C-S-H/PET con el parámetro calibrado.
+5. Extraer un corte local de la interfaz y ajustar la geometría de la interfase lejos de la región de contacto.
+6. Reportar el ángulo, la posición, el instante y el método de ajuste.
+
+La presencia de porosidad, resolución lattice y curvatura local puede hacer que el ángulo aparente difiera del ángulo de la superficie plana. Por ello debe informarse como ángulo aparente local y no como una propiedad universal del material.
+
+#### 6.5 Calcular la permeabilidad efectiva
+
+Para estudiar transporte de humedad se necesitan dos simulaciones comparables: C-S-H sin inclusiones y C-S-H con inclusiones de PET. En régimen estacionario, medir el caudal volumétrico $Q$, la longitud del dominio $L$, el área transversal $A$ y la caída de presión $\Delta p$.
+
+La permeabilidad puede estimarse con la ley de Darcy:
+
+$$
+K = \frac{Q\,\mu\,L}{A\,\Delta p}
+$$
+
+donde $\mu$ es la viscosidad dinámica en unidades físicas. Antes de convertir el resultado, registrar la relación entre unidades lattice y unidades físicas para longitud, tiempo, velocidad, presión y viscosidad. Verificar que el caudal y la caída de presión son aproximadamente constantes durante el intervalo usado.
+
+En ParaView, utilizar **Calculator** para obtener la componente de velocidad relevante, **Slice** o una superficie de integración para calcular el flujo y **Integrate Variables** cuando la malla lo permita. Exportar $Q$, $\Delta p$ y $K$ junto con el tiempo y la resolución de la malla.
+
+#### 6.6 Validación y reproducibilidad
+
+Antes de interpretar los resultados:
+
+- comprobar que la simulación alcanza un régimen estacionario o justificar el análisis transitorio;
+- repetir el caso con al menos dos resoluciones lattice;
+- comprobar la sensibilidad a `G_fluidFluid` y `G_fluidSolid`;
+- comparar la calibración del ángulo de contacto con el caso de gota sobre superficie plana;
+- verificar conservación de masa de cada componente;
+- comparar permeabilidad y saturación con y sin inclusiones bajo las mismas condiciones;
+- guardar parámetros, semilla, geometría, versión de Palabos y archivos de salida.
+
+El resultado mínimo del caso debe ser una tabla con $S_w(t)$, ángulo de contacto calibrado y aparente, $Q$, $\Delta p$ y $K$, acompañada de las conversiones de unidades y de la incertidumbre numérica.
 
 ---
 
