@@ -1,3 +1,7 @@
+## Guia de ejecucion
+
+La guia para preparar los entornos y ejecutar los ejemplos de LAMMPS, NWChem, OpenLB y Palabos desde Linux, Distrobox, Conda/Mamba y Visual Studio Code esta en [docs/README.md](docs/README.md).
+
 ## Investigation
 
 ### Molecular Dynamics Method - LAMMPS

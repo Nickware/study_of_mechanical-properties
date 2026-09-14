@@ -16,7 +16,8 @@ pair_coeff          * * CH.airebo C H
 velocity            all create 300.0 761341
 
 fix                 1 all nve
-timestep            0.0005
+# 0.25 fs: paso conservador para las vibraciones C-H del potencial AIREBO
+timestep            0.00025
 
 thermo              10
 run                 100

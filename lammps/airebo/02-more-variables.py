@@ -1,5 +1,5 @@
 # Este código carga un archivo de log de LAMMPS, extrae las variables de temperatura, energía potencial y presión, y las grafica en tres subplots verticales para analizar la evolución de la simulación AIREBO.
-# Asegúrate de tener el archivo "log.lammps" en el mismo director
+# Asegúrate de tener el archivo "log.airebo" en el mismo directorio
 #io que este script o proporciona la ruta correcta al archivo.
 # Requisitos:
 # - lammps_logfile: Para leer los archivos de log de LAMMPS
@@ -12,8 +12,8 @@
 from lammps_logfile import File
 import matplotlib.pyplot as plt
 
-# Cargar archivo log
-log = File("log.lammps")
+# Cargar el log producido por in.airebo
+log = File("log.airebo")
 
 # Extraer datos
 steps = log.get("Step")
